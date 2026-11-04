@@ -1,88 +1,163 @@
-# Rubik's Cube 3D Simulator (Three.js + TypeScript + WebMCP)
+# 🧊 Rubik's Cube 3D Simulator — Three.js + TypeScript + WebMCP 🤖
 
-An interactive 3D Rubik's Cube web simulator built with **Three.js**, **TypeScript**, and **Vite**, featuring realistic 3D rendering, multiple difficulty presets, full **Mouse/Touch**, **Keyboard**, and **W3C WebMCP (`navigator.modelContext`)** support for AI agents.
+[![CI](https://github.com/Puppo/rubiks-cube/actions/workflows/ci.yml/badge.svg)](https://github.com/Puppo/rubiks-cube/actions/workflows/ci.yml)
+[![Deploy to GitHub Pages](https://github.com/Puppo/rubiks-cube/actions/workflows/deploy.yml/badge.svg)](https://github.com/Puppo/rubiks-cube/actions/workflows/deploy.yml)
+[![Node.js >= 26](https://img.shields.io/badge/node-%3E%3D26.0.0-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript 7](https://img.shields.io/badge/TypeScript-7.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Three.js](https://img.shields.io/badge/Three.js-r187-000000?logo=three.js&logoColor=white)](https://threejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-## Features
+> ✨ **An interactive, physically-based 3D Rubik's Cube simulator** built with **Three.js**, **TypeScript**, and **Vite** — playable via **Mouse/Touch**, **Keyboard**, and **AI Agents using W3C WebMCP (`navigator.modelContext`)**!
 
-- **Realistic 3D Rubik's Cube (`Three.js`)**:
-  - 26 individual bevel-edged cubies (`RoundedBoxGeometry`) with glossy physical materials (`MeshPhysicalMaterial`), studio lighting, soft shadows, and smooth layer rotation animations.
-  - Synchronized live **2D Unfolded Cube Net** showing all 6 faces (`U`, `L`, `F`, `R`, `B`, `D`) simultaneously.
-- **Difficulty Levels**:
-  - **Beginner** (4-move scramble, hints & auto-solver enabled)
-  - **Easy** (8-move scramble, hints & auto-solver enabled)
-  - **Medium** (14-move scramble, hints & auto-solver enabled)
-  - **Hard** (20-move standard WCA random scramble, hints & auto-solver enabled)
-  - **Expert** (25-move deep scramble, hints & auto-solver disabled)
-- **Three Ways to Interact**:
-  1. **Mouse / Touch**:
-     - Drag directly on any 3D sticker to rotate the corresponding face or middle slice along your drag direction.
-     - Drag the background canvas to orbit the 3D camera (`OrbitControls`), or use the on-screen Move Pad buttons.
-  2. **Keyboard Shortcuts**:
-     - `U`, `D`, `L`, `R`, `F`, `B`, `M`, `E`, `S`: Rotate layer 90° clockwise
-     - `Shift + Key`: Rotate layer 90° counter-clockwise (`'`)
-     - `Ctrl/Cmd + Z`: Undo move
-     - `Ctrl/Cmd + Y` (or `Ctrl/Cmd + Shift + Z`): Redo move
-     - `Space`: Scramble cube at current difficulty
-     - `H`: Request next optimal move hint
-     - `Escape`: Reset cube to solved state
-  3. **AI Agents via WebMCP (`navigator.modelContext`)**:
-     - Exposes structured client-side tools via the W3C / Chrome WebMCP specification (`navigator.modelContext.registerTool`) as well as declarative HTML attributes (`toolname`, `tooldescription`, `toolparamdescription`) and an in-page **WebMCP Agent Console**.
+---
 
-## WebMCP Tools Reference
+## 🌟 Highlights & Features
 
-Browser AI agents can discover and invoke the following tools via `navigator.modelContext`:
+- 🎨 **Realistic 3D Studio Rendering (`Three.js`)**
+  - 26 individual bevel-edged cubies (`RoundedBoxGeometry`) with glossy clearcoat stickers (`MeshPhysicalMaterial`), soft studio lighting, shadow-catching floor, and cubic ease-out layer animations.
+- 🗺️ **Live 2D Unfolded Cube Net**
+  - Real-time synchronized 2D cross net (`U`, `L`, `F`, `R`, `B`, `D`) in the sidebar so you can inspect all 6 faces at a glance.
+- 🎯 **5 Difficulty Levels**
+  - 🌱 **Beginner** (`4 moves`) — Gentle scramble with step-by-step hints & auto-solver enabled.
+  - 🟢 **Easy** (`8 moves`) — Short scramble ideal for practicing layer recognition.
+  - 🟡 **Medium** (`14 moves`) — Balanced scramble requiring multi-step planning.
+  - 🟠 **Hard** (`20 moves - WCA`) — Standard WCA-length random scramble.
+  - 🔴 **Expert** (`25 moves - No Hints`) — Deep scramble with hints and auto-solver disabled for a pure speedcubing challenge.
+- 🧠 **Smart Hint & Auto-Solver Engine**
+  - Combines bounded Breadth-First Search (BFS) for short direct solutions with algebraic move reduction to guide you step-by-step or solve the cube automatically.
+- ⏱️ **Speedcubing Telemetry**
+  - Live tenth-of-a-second timer (`00:00.0`), move counter, full Undo/Redo stack, and adjustable rotation speed slider.
+- 🤖 **First-Class W3C WebMCP Support (`navigator.modelContext`)**
+  - Built-in support for the **Web Model Context Protocol**, allowing browser-based AI agents to inspect the cube state, request hints, execute algorithms, and solve the puzzle deterministically — plus an interactive **in-page WebMCP Agent Console**!
 
-| Tool Name           | Description                                                                                                                 | Input Schema Parameters                          |
-| :------------------ | :-------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------- |
-| `get_cube_state`    | Returns the complete cube state (`isSolved`, `faceletString`, 6 face 3x3 grids, ASCII net diagram, move count, difficulty). | `{}`                                             |
-| `rotate_face`       | Executes a single move in WCA notation (`U`, `U'`, `U2`, `D`, `L`, `R`, `F`, `B`, `M`, `E`, `S`).                           | `{ "move": "R" }`                                |
-| `execute_algorithm` | Executes a space-separated sequence of moves.                                                                               | `{ "algorithm": "R U R' U'" }`                   |
-| `scramble_cube`     | Resets and scrambles the cube at a chosen difficulty or custom move length.                                                 | `{ "difficulty": "medium", "customLength": 14 }` |
-| `set_difficulty`    | Changes the difficulty level (`beginner`, `easy`, `medium`, `hard`, `expert`).                                              | `{ "difficulty": "hard" }`                       |
-| `get_hint`          | Returns the next recommended move and remaining move count toward solving the cube.                                         | `{}`                                             |
-| `solve_cube`        | Computes and optionally executes the full solution sequence from the current state.                                         | `{ "execute": true }`                            |
-| `undo_move`         | Undoes the last executed move.                                                                                              | `{}`                                             |
-| `redo_move`         | Redoes the most recently undone move.                                                                                       | `{}`                                             |
-| `reset_cube`        | Resets the cube immediately to the solved state.                                                                            | `{}`                                             |
+---
 
-## Requirements
+## 🎮 Three Ways to Play
 
-- **Node.js**: `>= 26.0.0`
-- **Package Manager**: `npm >= 11.0.0`
+### 1️⃣ 🖱️ Mouse & Touch Controls
 
-## Getting Started
+| Action                     | Gesture                                                                                                                                          |
+| :------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔄 **Rotate a Cube Layer** | Click/touch and drag directly across any **3D sticker** in the direction you want that slice to turn                                             |
+| 🎥 **Orbit 3D Camera**     | Click/touch and drag on the **background canvas** (or use scroll/pinch to zoom)                                                                  |
+| 🎛️ **On-Screen Move Pad**  | Click any WCA notation button (`U`, `U'`, `D`, `D'`, `L`, `L'`, `R`, `R'`, `F`, `F'`, `B`, `B'`, `M`, `E`, `S`) or run a custom algorithm string |
+
+### 2️⃣ ⌨️ Keyboard Shortcuts
+
+| Key / Shortcut                                                                | Action                                                           |
+| :---------------------------------------------------------------------------- | :--------------------------------------------------------------- |
+| <kbd>U</kbd> <kbd>D</kbd> <kbd>L</kbd> <kbd>R</kbd> <kbd>F</kbd> <kbd>B</kbd> | Rotate outer face **90° clockwise**                              |
+| <kbd>M</kbd> <kbd>E</kbd> <kbd>S</kbd>                                        | Rotate middle slice (`Middle`, `Equatorial`, `Standing`) **90°** |
+| <kbd>Shift</kbd> + <kbd>U</kbd>…<kbd>S</kbd>                                  | Rotate face or slice **90° counter-clockwise (`'`)**             |
+| <kbd>Space</kbd>                                                              | 🎲 **Scramble** the cube at the selected difficulty              |
+| <kbd>H</kbd>                                                                  | 💡 **Hint** — highlight the next recommended move                |
+| <kbd>Ctrl/Cmd</kbd> + <kbd>Z</kbd>                                            | ↶ **Undo** the last move                                         |
+| <kbd>Ctrl/Cmd</kbd> + <kbd>Y</kbd>                                            | ↷ **Redo** the previously undone move                            |
+| <kbd>Esc</kbd>                                                                | 🔄 **Reset** the cube to the solved state                        |
+
+### 3️⃣ 🤖 AI Agents via WebMCP (`navigator.modelContext`)
+
+AI agents running in the browser (or via MCP bridges) can discover and call structured tools directly through `navigator.modelContext` or `window.rubiksWebMCP`:
+
+| 🛠️ Tool Name        | 📝 Description                                                                                                         | 📥 Example Input JSON        |
+| :------------------ | :--------------------------------------------------------------------------------------------------------------------- | :--------------------------- |
+| `get_cube_state`    | Returns `isSolved`, `faceletString`, all 6 faces as 3×3 color grids, an ASCII net diagram, move count, and difficulty. | `{}`                         |
+| `rotate_face`       | Executes a single WCA move (`U`, `U'`, `U2`, `D`, `L`, `R`, `F`, `B`, `M`, `E`, `S`).                                  | `{"move": "R"}`              |
+| `execute_algorithm` | Executes a space-separated sequence of moves in standard WCA notation.                                                 | `{"algorithm": "R U R' U'"}` |
+| `scramble_cube`     | Resets and scrambles the cube using a difficulty preset or custom move count.                                          | `{"difficulty": "medium"}`   |
+| `set_difficulty`    | Switches the active difficulty preset (`beginner`, `easy`, `medium`, `hard`, `expert`).                                | `{"difficulty": "hard"}`     |
+| `get_hint`          | Computes the next optimal move and remaining move count toward solving the cube.                                       | `{}`                         |
+| `solve_cube`        | Computes and optionally executes the complete solution sequence from the current state.                                | `{"execute": true}`          |
+| `undo_move`         | Undoes the last executed move.                                                                                         | `{}`                         |
+| `redo_move`         | Redoes the most recently undone move.                                                                                  | `{}`                         |
+| `reset_cube`        | Resets the cube immediately to its clean solved state.                                                                 | `{}`                         |
+
+---
+
+## 🏗️ Project Architecture
+
+```text
+rubiks-cube/
+├── .github/workflows/
+│   ├── ci.yml                  # 🔍 Continuous Integration (Typecheck, Oxlint, Oxfmt, Vitest, Build)
+│   └── deploy.yml              # 🚀 GitHub Pages deployment on push to main
+├── src/
+│   ├── index.html              # 🌐 Entry HTML (with declarative WebMCP form attributes)
+│   ├── main.ts                 # ⚡ Application bootstrap
+│   ├── style.css               # 🎨 Main stylesheet entry point
+│   ├── styles/                 # 💅 Modular CSS (base, viewport, sidebar)
+│   ├── core/                   # 🧮 Pure mathematical 3x3x3 engine & solver
+│   │   ├── types.ts            #    Core types & state interfaces
+│   │   ├── constants.ts        #    Colors, difficulty presets, WCA move specs
+│   │   ├── notation.ts         #    Parser, move inversion & algebraic simplification
+│   │   ├── geometry.ts         #    3D integer vector rotations & face projections
+│   │   ├── ScrambleGenerator.ts#    WCA scramble generator & BFS/inverse solver
+│   │   └── CubeEngine.ts       #    Stateful cube engine & event emitter
+│   ├── controls/               # 🎮 Input math & controllers
+│   │   ├── dragMath.ts         #    3D surface drag cross-product resolver (ω = n × u)
+│   │   └── KeyboardController.ts#   Keyboard shortcut mapper
+│   ├── renderer/               # 🎥 Three.js 3D visualization
+│   │   ├── SceneLighting.ts    #    Studio lighting & shadow plane
+│   │   ├── CubieMeshFactory.ts #    Rounded cubies & clearcoat stickers
+│   │   ├── PointerDragHandler.ts#   Raycasting & pointer surface drag handler
+│   │   └── CubeScene3D.ts      #    3D scene & animation queue manager
+│   ├── webmcp/                 # 🤖 W3C WebMCP integration
+│   │   ├── types.ts            #    WebMCP schemas & tool interfaces
+│   │   ├── modelContextShim.ts #    navigator.modelContext polyfill & bridge
+│   │   ├── cubeTools.ts        #    10 Rubik's Cube tool definitions
+│   │   └── WebMcpBridge.ts     #    Tool registry, execution & live logger
+│   └── ui/                     # 🖥️ DOM UI & state synchronization
+│       ├── templates.ts        #    HTML layout templates
+│       ├── CubeNetView.ts      #    2D unfolded cube net & timer formatter
+│       ├── WebMcpConsoleView.ts#    In-page WebMCP inspector & log viewer
+│       └── AppController.ts    #    Main UI controller
+└── tests/                      # 🧪 Vitest unit & integration test suites
+```
+
+---
+
+## 🚀 Quick Start
+
+### 📋 Prerequisites
+
+- 🟢 **Node.js**: `>= 26.0.0`
+- 📦 **npm**: `>= 11.0.0`
+
+### 💻 Installation & Commands
 
 ```bash
-# Install dependencies
+# 📥 Install dependencies
 npm install
 
-# Start development server
+# 🔥 Start local development server (http://localhost:5173)
 npm run dev
 
-# Type-check with TypeScript
+# 🔎 Run TypeScript 7 type checking
 npm run typecheck
 
-# Lint source and test files with Oxlint
+# ⚡ Lint code with Oxlint
 npm run lint
 
-# Format and verify formatting with Oxfmt
+# ✨ Format & check formatting with Oxfmt
 npm run format
 npm run format:check
 
-# Run unit & integration tests with coverage
+# 🧪 Run unit & integration tests with coverage (Vitest)
 npm run test:ci
 
-# Build production bundle for GitHub Pages
+# 📦 Build production bundle to ./dist
 npm run build
 ```
 
-## Deployment (GitHub Pages & CI)
+---
 
-The repository includes two GitHub Actions workflows ([`.github/workflows/ci.yml`](.github/workflows/ci.yml) for continuous integration and [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) for deployment on push to `main`) running on **Node.js 26** and pre-commit hooks via **Lefthook** ([`lefthook.yml`](lefthook.yml)) that automatically:
+## 🤝 Contributing
 
-1. Installs dependencies via `npm ci`
-2. Runs TypeScript type checking (`npm run typecheck`)
-3. Runs Oxlint (`npm run lint`)
-4. Verifies code formatting with Oxfmt (`npm run format:check`)
-5. Runs the Vitest suite with coverage (`npm run test:ci`)
-6. Builds the static production bundle (`npm run build`) and deploys `./dist` to **GitHub Pages**.
+Contributions, issues, and feature requests are welcome! 🎉  
+Please read our [**Contributing Guide (`CONTRIBUTING.md`)**](./CONTRIBUTING.md) for details on our code of conduct, development workflow, pre-commit hooks, and pull request process.
+
+---
+
+## 📄 License
+
+Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for more information.

@@ -21,8 +21,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "oxlint --deny-warnings src tests",
     "lint:fix": "oxlint --fix src tests",
-    "format": "oxfmt src tests vite.config.ts package.json README.md",
-    "format:check": "oxfmt --check src tests vite.config.ts package.json README.md",
+    "format": "oxfmt src tests vite.config.ts package.json README.md CONTRIBUTING.md",
+    "format:check": "oxfmt --check src tests vite.config.ts package.json README.md CONTRIBUTING.md",
     "prepare": "lefthook install || true"
   },
   "dependencies": {
