@@ -92,3 +92,72 @@ kbd {
   font-family: ui-monospace, monospace;
   color: #f8fafc;
 }
+
+@media (pointer: coarse) {
+  .keyboard-legend {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .workspace {
+    padding: 0.6rem 0.75rem 1rem;
+    gap: 0.65rem;
+    min-height: auto;
+  }
+
+  .viewport-panel {
+    min-height: 280px;
+    border-radius: var(--radius-md);
+  }
+
+  .cube-viewport {
+    min-height: 220px;
+    height: clamp(220px, 38dvh, 330px);
+  }
+
+  .status-banner {
+    top: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+  }
+
+  #status-banner-text {
+    font-size: 0.74rem;
+    padding: 0.3rem 0.7rem;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .viewport-toolbar {
+    gap: 0.4rem;
+    padding: 0.45rem 0.6rem;
+  }
+
+  .viewport-toolbar .btn-sm {
+    min-height: 36px;
+    padding: 0.35rem 0.6rem;
+  }
+
+  .speed-control {
+    width: 100%;
+    justify-content: center;
+    padding-top: 0.15rem;
+  }
+
+  .speed-control input[type='range'] {
+    flex: 1;
+    max-width: 180px;
+  }
+
+  .interaction-legend {
+    padding: 0.38rem 0.65rem;
+    font-size: 0.7rem;
+  }
+
+  .keyboard-legend {
+    display: none;
+  }
+}

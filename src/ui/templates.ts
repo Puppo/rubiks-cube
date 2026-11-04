@@ -98,13 +98,46 @@ export function renderAppShellHtml(
           </div>
 
           <div class="interaction-legend">
-            <span><strong>Mouse/Touch:</strong> Drag any sticker to turn its layer • Drag background to orbit</span>
-            <span><strong>Keyboard:</strong> <kbd>U</kbd> <kbd>D</kbd> <kbd>L</kbd> <kbd>R</kbd> <kbd>F</kbd> <kbd>B</kbd> <kbd>M</kbd> <kbd>E</kbd> <kbd>S</kbd> (+<kbd>Shift</kbd> for counter-clockwise) • <kbd>Space</kbd> Scramble • <kbd>H</kbd> Hint</span>
+            <span class="touch-legend"><strong>Mouse/Touch:</strong> Drag any sticker to turn its layer • Drag background to orbit</span>
+            <span class="keyboard-legend"><strong>Keyboard:</strong> <kbd>U</kbd> <kbd>D</kbd> <kbd>L</kbd> <kbd>R</kbd> <kbd>F</kbd> <kbd>B</kbd> <kbd>M</kbd> <kbd>E</kbd> <kbd>S</kbd> (+<kbd>Shift</kbd> for counter-clockwise) • <kbd>Space</kbd> Scramble • <kbd>H</kbd> Hint</span>
           </div>
         </section>
 
-        <aside class="control-sidebar" aria-label="Cube Controls and WebMCP Agent Console">
-          <div class="card">
+        <aside class="control-sidebar" data-active-tab="moves" aria-label="Cube Controls and WebMCP Agent Console">
+          <div class="mobile-panel-tabs" role="tablist" aria-label="Control panels" data-testid="mobile-panel-tabs">
+            <button
+              type="button"
+              role="tab"
+              class="mobile-tab-btn active"
+              data-tab="moves"
+              aria-selected="true"
+              data-testid="tab-moves"
+            >
+              Moves
+            </button>
+            <button
+              type="button"
+              role="tab"
+              class="mobile-tab-btn"
+              data-tab="net"
+              aria-selected="false"
+              data-testid="tab-net"
+            >
+              2D Net
+            </button>
+            <button
+              type="button"
+              role="tab"
+              class="mobile-tab-btn"
+              data-tab="webmcp"
+              aria-selected="false"
+              data-testid="tab-webmcp"
+            >
+              WebMCP
+            </button>
+          </div>
+
+          <div class="card" data-panel="net">
             <div class="card-header">
               <h2>2D Cube Net</h2>
               <span class="card-meta">All 6 faces live</span>
@@ -112,7 +145,7 @@ export function renderAppShellHtml(
             <div id="cube-2d-net" class="cube-net" data-testid="cube-2d-net" aria-label="2D unfolded cube state"></div>
           </div>
 
-          <div class="card">
+          <div class="card" data-panel="moves">
             <div class="card-header">
               <h2>Move Controls</h2>
               <span class="card-meta">WCA Notation</span>
@@ -142,7 +175,7 @@ export function renderAppShellHtml(
             </form>
           </div>
 
-          <div class="card webmcp-card">
+          <div class="card webmcp-card" data-panel="webmcp">
             <div class="card-header">
               <h2>WebMCP Agent Console</h2>
               <span class="badge badge-webmcp" title="navigator.modelContext is active and exposing structured tools to browser AI agents">

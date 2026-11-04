@@ -159,6 +159,18 @@ export class AppController {
     return solution;
   }
 
+  public setActiveMobileTab(root: HTMLElement, tab: 'moves' | 'net' | 'webmcp'): void {
+    const sidebar = root.querySelector<HTMLElement>('.control-sidebar');
+    if (sidebar) {
+      sidebar.setAttribute('data-active-tab', tab);
+    }
+    root.querySelectorAll<HTMLButtonElement>('.mobile-tab-btn').forEach((btn) => {
+      const isActive = btn.dataset.tab === tab;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+  }
+
   private setStatusMessage(msg: string): void {
     this.statusMessage = msg;
     const statusEl = document.getElementById('status-banner-text');
@@ -205,6 +217,15 @@ export class AppController {
         const move = btn.dataset.move as MoveNotation | undefined;
         if (move) {
           void this.executeMoveWithAnimation(move);
+        }
+      });
+    });
+
+    root.querySelectorAll<HTMLButtonElement>('.mobile-tab-btn').forEach((tabBtn) => {
+      tabBtn.addEventListener('click', () => {
+        const tab = tabBtn.dataset.tab as 'moves' | 'net' | 'webmcp' | undefined;
+        if (tab) {
+          this.setActiveMobileTab(root, tab);
         }
       });
     });

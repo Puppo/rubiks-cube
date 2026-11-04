@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { resolveMoveFromSurfaceDrag } from '../src/controls/dragMath';
 import { resolveKeyboardAction } from '../src/controls/KeyboardController';
+import { CubeScene3D } from '../src/renderer/CubeScene3D';
 
 describe('3D Surface Drag & Keyboard Controls', () => {
   it('resolves dragging on the Front face (normal +Z) correctly', () => {
@@ -96,5 +97,12 @@ describe('3D Surface Drag & Keyboard Controls', () => {
       type: 'hint',
     });
     expect(resolveKeyboardAction({ key: 'x' })).toBeNull();
+  });
+
+  it('computes adaptive camera FOV for narrow portrait mobile aspect ratios', () => {
+    expect(CubeScene3D.computeResponsiveFov(1.5)).toBe(40);
+    expect(CubeScene3D.computeResponsiveFov(1)).toBe(40);
+    expect(CubeScene3D.computeResponsiveFov(0.8)).toBe(50);
+    expect(CubeScene3D.computeResponsiveFov(0.5)).toBe(54);
   });
 });

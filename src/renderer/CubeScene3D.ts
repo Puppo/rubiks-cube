@@ -35,6 +35,8 @@ export class CubeScene3D {
 
   private baseAnimationDurationMs = 190;
   private rafId: number | null = null;
+  private resizeObserver: ResizeObserver | null = null;
+  private readonly onWindowResize: () => void;
 
   constructor(
     container: HTMLElement,
@@ -44,10 +46,16 @@ export class CubeScene3D {
     this.container = container;
     this.engine = engine;
 
-    const width = Math.max(container.clientWidth, 320);
-    const height = Math.max(container.clientHeight, 320);
+    const width = Math.max(container.clientWidth, 260);
+    const height = Math.max(container.clientHeight, 260);
+    const initialAspect = width / height;
 
-    this.camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+    this.camera = new THREE.PerspectiveCamera(
+      CubeScene3D.computeResponsiveFov(initialAspect),
+      initialAspect,
+      0.1,
+      100
+    );
     this.camera.position.set(5.4, 4.4, 6.2);
 
     this.renderer = new THREE.WebGLRenderer({
@@ -88,15 +96,30 @@ export class CubeScene3D {
       onMoveTrigger: onUserMoveTrigger,
     });
 
-    window.addEventListener('resize', () => {
-      const w = Math.max(this.container.clientWidth, 280);
-      const h = Math.max(this.container.clientHeight, 280);
-      this.camera.aspect = w / h;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(w, h);
-    });
+    this.onWindowResize = () => this.handleResize();
+    window.addEventListener('resize', this.onWindowResize);
+
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => this.handleResize());
+      this.resizeObserver.observe(this.container);
+    }
 
     this.startRenderLoop();
+  }
+
+  public static computeResponsiveFov(aspect: number): number {
+    if (aspect >= 1) return 40;
+    return Math.min(54, Math.round(40 / Math.max(aspect, 0.72)));
+  }
+
+  private handleResize(): void {
+    const w = Math.max(this.container.clientWidth, 240);
+    const h = Math.max(this.container.clientHeight, 240);
+    const aspect = w / h;
+    this.camera.aspect = aspect;
+    this.camera.fov = CubeScene3D.computeResponsiveFov(aspect);
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(w, h);
   }
 
   public rebuildCubiesFromEngine(): void {
@@ -242,6 +265,8 @@ export class CubeScene3D {
     if (this.rafId !== null) {
       cancelAnimationFrame(this.rafId);
     }
+    window.removeEventListener('resize', this.onWindowResize);
+    this.resizeObserver?.disconnect();
     this.controls.dispose();
     this.renderer.dispose();
   }

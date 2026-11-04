@@ -19,6 +19,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -36,6 +37,7 @@ body {
 .app-shell {
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -214,11 +216,18 @@ input[type='text']:focus {
   transition: all 0.15s ease;
   color: var(--text-main);
   background: #1e293b;
+  touch-action: manipulation;
+  user-select: none;
 }
 
 .btn:hover:not(:disabled) {
   transform: translateY(-1px);
   filter: brightness(1.1);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.95);
 }
 
 .btn:disabled {
@@ -243,4 +252,84 @@ input[type='text']:focus {
 .btn-sm {
   padding: 0.3rem 0.65rem;
   font-size: 0.76rem;
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    padding: 0.55rem 0.75rem;
+    gap: 0.55rem;
+  }
+
+  .brand {
+    gap: 0.5rem;
+  }
+
+  .brand h1 {
+    font-size: 0.96rem;
+  }
+
+  .subtitle {
+    display: none;
+  }
+
+  .stats-bar {
+    gap: 0.35rem;
+    margin-left: auto;
+  }
+
+  .stat-pill {
+    padding: 0.22rem 0.5rem;
+    gap: 0.35rem;
+  }
+
+  .stat-label {
+    font-size: 0.64rem;
+  }
+
+  .stat-value {
+    font-size: 0.82rem;
+  }
+
+  .badge {
+    font-size: 0.64rem;
+    padding: 0.14rem 0.42rem;
+  }
+
+  .top-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+  }
+
+  .difficulty-select-wrapper {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+    padding: 0.3rem 0.65rem;
+  }
+
+  .difficulty-select-wrapper select {
+    flex: 1;
+    max-width: 70%;
+  }
+
+  select,
+  input[type='text'] {
+    font-size: 16px;
+    min-height: 38px;
+  }
+
+  .top-actions .btn {
+    min-height: 38px;
+    padding: 0.4rem 0.35rem;
+    font-size: 0.78rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .stat-label {
+    display: none;
+  }
 }
