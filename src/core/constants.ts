@@ -11,21 +11,21 @@ import type {
 } from './types';
 
 export const FACE_DEFAULT_COLORS: Record<FaceName, CubeColor> = {
-  U: 'W', // Up = White
-  D: 'Y', // Down = Yellow
-  L: 'O', // Left = Orange
-  R: 'R', // Right = Red
-  F: 'G', // Front = Green
-  B: 'B', // Back = Blue
+  U: 'W',
+  D: 'Y',
+  L: 'O',
+  R: 'R',
+  F: 'G',
+  B: 'B',
 };
 
 export const COLOR_HEX_MAP: Record<CubeColor, number> = {
-  W: 0xf8fafc, // Crisp White
-  Y: 0xfacc15, // Vibrant Yellow
-  O: 0xff6b00, // Bright Speedcube Orange
-  R: 0xdc2626, // Deep Speedcube Red
-  G: 0x16a34a, // Vivid Green
-  B: 0x2563eb, // Royal Blue
+  W: 0xf8fafc,
+  Y: 0xfacc15,
+  O: 0xff6b00,
+  R: 0xdc2626,
+  G: 0x16a34a,
+  B: 0x2563eb,
 };
 
 export const COLOR_CSS_MAP: Record<CubeColor, string> = {
@@ -98,21 +98,6 @@ export const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
   },
 };
 
-/**
- * Base clockwise move specifications:
- * By the right-hand rule, a clockwise 90° turn when looking directly at a face
- * with outward normal N is a -90° (-1 quarter-turn) rotation around N.
- *
- * - U (normal +Y): clockwise is -1 around Y
- * - D (normal -Y): clockwise is +1 around Y
- * - R (normal +X): clockwise is -1 around X
- * - L (normal -X): clockwise is +1 around X
- * - F (normal +Z): clockwise is -1 around Z
- * - B (normal -Z): clockwise is +1 around Z
- * - M (middle X=0, follows L): clockwise is +1 around X
- * - E (equatorial Y=0, follows D): clockwise is +1 around Y
- * - S (standing Z=0, follows F): clockwise is -1 around Z
- */
 const BASE_MOVE_SPECS: Record<
   BaseMove,
   { axis: 'x' | 'y' | 'z'; layer: -1 | 0 | 1; cwQuarterTurns: -1 | 1 }
@@ -160,71 +145,11 @@ export const MOVE_DEFINITIONS: Record<MoveNotation, MoveDefinition> = (() => {
   return defs;
 })();
 
-export function isValidMoveNotation(input: string): input is MoveNotation {
-  return Object.prototype.hasOwnProperty.call(MOVE_DEFINITIONS, input.trim());
-}
-
-export function parseMoveNotation(input: string): MoveDefinition {
-  const trimmed = input.trim();
-  if (!isValidMoveNotation(trimmed)) {
-    throw new Error(`Invalid Rubik's Cube move notation: "${input}"`);
-  }
-  return MOVE_DEFINITIONS[trimmed];
-}
-
-export function parseAlgorithm(algorithm: string): MoveNotation[] {
-  const trimmed = algorithm.trim();
-  if (!trimmed) return [];
-  const tokens = trimmed.split(/\s+/);
-  return tokens.map((token) => parseMoveNotation(token).notation);
-}
-
-export function invertMove(move: MoveNotation): MoveNotation {
-  const def = MOVE_DEFINITIONS[move];
-  if (def.modifier === '2') {
-    return move;
-  }
-  const inverseModifier: MoveModifier = def.modifier === '' ? "'" : '';
-  return `${def.base}${inverseModifier}`;
-}
-
-export function invertAlgorithm(moves: MoveNotation[]): MoveNotation[] {
-  return moves.toReversed().map(invertMove);
-}
-
-/**
- * Simplifies / reduces a sequence of moves by combining adjacent moves on the same face
- * (e.g. ["R", "R"] -> ["R2"], ["U", "U'"] -> [], ["F2", "F"] -> ["F'"]).
- */
-export function simplifyMoves(moves: MoveNotation[]): MoveNotation[] {
-  const stack: { base: BaseMove; turns: number }[] = [];
-
-  const modifierToTurns = (mod: MoveModifier): number => {
-    if (mod === '') return 1;
-    if (mod === "'") return 3;
-    return 2;
-  };
-
-  const turnsToModifier = (turns: number): MoveModifier => {
-    const norm = ((turns % 4) + 4) % 4;
-    if (norm === 1) return '';
-    if (norm === 2) return '2';
-    return "'";
-  };
-
-  for (const move of moves) {
-    const def = MOVE_DEFINITIONS[move];
-    const turns = modifierToTurns(def.modifier);
-    const top = stack[stack.length - 1];
-    if (top && top.base === def.base) {
-      top.turns = (top.turns + turns) % 4;
-      if (top.turns === 0) {
-        stack.pop();
-      }
-    } else {
-      stack.push({ base: def.base, turns });
-    }
-  }
-
-  return stack.map(({ base, turns }) => `${base}${turnsToModifier(turns)}` as MoveNotation);
-}
+export {
+  invertAlgorithm,
+  invertMove,
+  isValidMoveNotation,
+  parseAlgorithm,
+  parseMoveNotation,
+  simplifyMoves,
+} from './notation';
