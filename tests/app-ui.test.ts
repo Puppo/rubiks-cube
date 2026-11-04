@@ -44,6 +44,20 @@ describe('AppController UI Integration', () => {
     const logList = root.querySelector('[data-testid="webmcp-log-list"]');
     expect(logList?.textContent).toContain('rotate_face');
 
+    // Switch mobile control tabs
+    const sidebar = root.querySelector<HTMLElement>('.control-sidebar');
+    const netTabBtn = root.querySelector<HTMLButtonElement>('[data-testid="tab-net"]');
+    const webmcpTabBtn = root.querySelector<HTMLButtonElement>('[data-testid="tab-webmcp"]');
+    expect(sidebar?.getAttribute('data-active-tab')).toBe('moves');
+
+    netTabBtn!.click();
+    expect(sidebar?.getAttribute('data-active-tab')).toBe('net');
+    expect(netTabBtn?.getAttribute('aria-selected')).toBe('true');
+
+    webmcpTabBtn!.click();
+    expect(sidebar?.getAttribute('data-active-tab')).toBe('webmcp');
+    expect(webmcpTabBtn?.getAttribute('aria-selected')).toBe('true');
+
     app.dispose();
     root.remove();
   });

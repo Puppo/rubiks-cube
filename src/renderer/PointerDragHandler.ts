@@ -29,12 +29,33 @@ export function bindPointerDragEvents(params: {
   const pointerNdc = new THREE.Vector2();
 
   let activeDrag: {
+    pointerId: number;
+    pointerType: string;
     cubiePosition: Vec3Int;
     faceNormal: Vec3Int;
     startPointWorld: THREE.Vector3;
     dragPlane: THREE.Plane;
     moveTriggered: boolean;
   } | null = null;
+  const activePointerIds = new Set<number>();
+
+  const releaseDragPointerCapture = (pointerId: number) => {
+    try {
+      if (domElement.hasPointerCapture?.(pointerId)) {
+        domElement.releasePointerCapture(pointerId);
+      }
+    } catch {
+      // Ignore if pointer capture is unavailable in synthetic test environments
+    }
+  };
+
+  const cancelActiveDrag = () => {
+    if (activeDrag) {
+      releaseDragPointerCapture(activeDrag.pointerId);
+      activeDrag = null;
+      controls.enabled = true;
+    }
+  };
 
   const updateNdc = (clientX: number, clientY: number) => {
     const rect = domElement.getBoundingClientRect();
@@ -43,6 +64,14 @@ export function bindPointerDragEvents(params: {
   };
 
   const onPointerDown = (e: PointerEvent) => {
+    activePointerIds.add(e.pointerId);
+
+    // If a second finger touches the screen (e.g., pinch-zoom), cancel any single-sticker drag
+    if (activePointerIds.size > 1) {
+      cancelActiveDrag();
+      return;
+    }
+
     if (e.button !== 0 || isAnimating()) return;
 
     updateNdc(e.clientX, e.clientY);
@@ -69,7 +98,14 @@ export function bindPointerDragEvents(params: {
     const dragPlane = new THREE.Plane().setFromNormalAndCoplanarPoint(planeNormal, hit.point);
 
     controls.enabled = false;
+    try {
+      domElement.setPointerCapture?.(e.pointerId);
+    } catch {
+      // Ignore if pointer capture is unsupported
+    }
     activeDrag = {
+      pointerId: e.pointerId,
+      pointerType: e.pointerType || 'mouse',
       cubiePosition: cubiePos,
       faceNormal: snappedNormal,
       startPointWorld: hit.point.clone(),
@@ -79,7 +115,7 @@ export function bindPointerDragEvents(params: {
   };
 
   const onPointerMove = (e: PointerEvent) => {
-    if (!activeDrag || activeDrag.moveTriggered) return;
+    if (!activeDrag || activeDrag.moveTriggered || e.pointerId !== activeDrag.pointerId) return;
 
     updateNdc(e.clientX, e.clientY);
     raycaster.setFromCamera(pointerNdc, camera);
@@ -88,7 +124,8 @@ export function bindPointerDragEvents(params: {
     if (!raycaster.ray.intersectPlane(activeDrag.dragPlane, currentWorldPoint)) return;
 
     const deltaWorld = currentWorldPoint.sub(activeDrag.startPointWorld);
-    if (deltaWorld.length() < 0.24) return;
+    const minDragDistance = activeDrag.pointerType === 'touch' ? 0.18 : 0.24;
+    if (deltaWorld.length() < minDragDistance) return;
 
     const moveDef = resolveMoveFromSurfaceDrag(
       activeDrag.faceNormal,
@@ -102,10 +139,10 @@ export function bindPointerDragEvents(params: {
     }
   };
 
-  const endDrag = () => {
-    if (activeDrag) {
-      activeDrag = null;
-      controls.enabled = true;
+  const endDrag = (e: PointerEvent) => {
+    activePointerIds.delete(e.pointerId);
+    if (activeDrag && e.pointerId === activeDrag.pointerId) {
+      cancelActiveDrag();
     }
   };
 

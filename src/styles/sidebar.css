@@ -4,6 +4,32 @@
   gap: 0.85rem;
 }
 
+.mobile-panel-tabs {
+  display: none;
+}
+
+.mobile-tab-btn {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.48rem 0.5rem;
+  border-radius: 8px;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.mobile-tab-btn.active {
+  background: var(--primary);
+  color: var(--text-main);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+}
+
 .card {
   background: var(--bg-card);
   backdrop-filter: blur(10px);
@@ -94,10 +120,16 @@
   padding: 0.35rem 0.2rem;
   border-radius: 4px;
   transition: background 0.12s;
+  touch-action: manipulation;
+  user-select: none;
 }
 
 .btn-move:hover {
   background: var(--primary);
+}
+
+.btn-move:active {
+  background: var(--primary-hover);
 }
 
 .btn-move-prime {
@@ -177,5 +209,59 @@
 @media (max-width: 960px) {
   .workspace {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .control-sidebar {
+    gap: 0.55rem;
+  }
+
+  .mobile-panel-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.3rem;
+    background: rgba(15, 23, 42, 0.85);
+    padding: 0.28rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .control-sidebar[data-active-tab='moves'] .card:not([data-panel='moves']),
+  .control-sidebar[data-active-tab='net'] .card:not([data-panel='net']),
+  .control-sidebar[data-active-tab='webmcp'] .card:not([data-panel='webmcp']) {
+    display: none;
+  }
+
+  .card {
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+  }
+
+  .move-grid {
+    gap: 0.45rem;
+  }
+
+  .btn-move {
+    min-height: 44px;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.25rem;
+  }
+
+  .algo-form .btn {
+    min-height: 38px;
+    padding: 0.4rem 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .net-row {
+    grid-template-columns: repeat(4, 44px);
+  }
+
+  .net-spacer,
+  .net-face {
+    width: 44px;
+    height: 44px;
   }
 }
