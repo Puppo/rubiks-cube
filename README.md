@@ -78,7 +78,7 @@ npm run build
 
 ## Deployment (GitHub Pages & CI)
 
-The repository includes a GitHub Actions workflow ([`.github/workflows/ci-deploy.yml`](.github/workflows/ci-deploy.yml)) running on **Node.js 26** and pre-commit hooks via **Lefthook** ([`lefthook.yml`](lefthook.yml)) that automatically:
+The repository includes two GitHub Actions workflows ([`.github/workflows/ci.yml`](.github/workflows/ci.yml) for continuous integration and [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) for deployment on push to `main`) running on **Node.js 26** and pre-commit hooks via **Lefthook** ([`lefthook.yml`](lefthook.yml)) that automatically:
 
 1. Installs dependencies via `npm ci`
 2. Runs TypeScript type checking (`npm run typecheck`)

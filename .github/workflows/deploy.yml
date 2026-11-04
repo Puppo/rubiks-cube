@@ -1,15 +1,9 @@
-name: CI & Deploy to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
       - main
-      - master
-      - 'feature/**'
-  pull_request:
-    branches:
-      - main
-      - master
   workflow_dispatch:
 
 permissions:
@@ -18,12 +12,12 @@ permissions:
   id-token: write
 
 concurrency:
-  group: 'pages-${{ github.ref }}'
-  cancel-in-progress: true
+  group: 'pages'
+  cancel-in-progress: false
 
 jobs:
-  test-and-build:
-    name: Typecheck, Lint, Format, Test & Build
+  build:
+    name: Build Static Site
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -38,35 +32,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run TypeScript type check
-        run: npm run typecheck
-
-      - name: Run Oxlint
-        run: npm run lint
-
-      - name: Check formatting with Oxfmt
-        run: npm run format:check
-
-      - name: Run unit & integration tests
-        run: npm run test:ci
-
       - name: Build production bundle
         run: npm run build
 
       - name: Configure Pages
-        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         uses: actions/configure-pages@v6
 
       - name: Upload Pages artifact
-        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         uses: actions/upload-pages-artifact@v5
         with:
           path: ./dist
 
   deploy:
     name: Deploy to GitHub Pages
-    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    needs: test-and-build
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
