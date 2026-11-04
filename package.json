@@ -1,0 +1,46 @@
+{
+  "name": "rubiks-cube-3d-webmcp",
+  "version": "1.0.0",
+  "description": "Interactive 3D Rubik's Cube Simulator built with Three.js, TypeScript, and W3C WebMCP support for AI agents",
+  "keywords": [
+    "3d-puzzle",
+    "ai-agents",
+    "rubiks-cube",
+    "threejs",
+    "typescript",
+    "webmcp"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ci": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint --deny-warnings src tests",
+    "lint:fix": "oxlint --fix src tests",
+    "format": "oxfmt src tests vite.config.ts package.json README.md",
+    "format:check": "oxfmt --check src tests vite.config.ts package.json README.md",
+    "prepare": "lefthook install || true"
+  },
+  "dependencies": {
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.187.0",
+    "@vitest/coverage-v8": "^5.1.0",
+    "jsdom": "^30.1.3",
+    "lefthook": "^2.2.2",
+    "oxfmt": "^0.76.0",
+    "oxlint": "^1.91.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5",
+    "vitest": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=26.0.0",
+    "npm": ">=11.0.0"
+  }
+}

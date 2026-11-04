@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "rules": {
+    "typescript/no-explicit-any": "off",
+    "unicorn/prefer-add-event-listener": "off",
+    "unicorn/no-null": "off",
+    "unicorn/prefer-query-selector": "off",
+    "unicorn/prefer-dom-node-remove": "off",
+    "unicorn/prefer-dom-node-append": "off",
+    "unicorn/prefer-dom-node-dataset": "off",
+    "unicorn/prefer-number-properties": "off",
+    "unicorn/no-zero-fractions": "off",
+    "unicorn/numeric-separators-style": "off",
+    "unicorn/consistent-function-scoping": "off",
+    "unicorn/no-array-for-each": "off"
+  },
+  "ignorePatterns": ["dist/**", "coverage/**", "node_modules/**"]
+}
