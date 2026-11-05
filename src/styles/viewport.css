@@ -93,8 +93,8 @@ kbd {
   color: #f8fafc;
 }
 
-@media (pointer: coarse) {
-  .keyboard-legend {
+@media (pointer: coarse), (max-width: 960px) {
+  .interaction-legend {
     display: none;
   }
 }
@@ -150,14 +150,5 @@ kbd {
   .speed-control input[type='range'] {
     flex: 1;
     max-width: 180px;
-  }
-
-  .interaction-legend {
-    padding: 0.38rem 0.65rem;
-    font-size: 0.7rem;
-  }
-
-  .keyboard-legend {
-    display: none;
   }
 }
